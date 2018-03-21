@@ -10,6 +10,6 @@ namespace MusicStreaming
     {
         Spotify,
         Deezer,
-        X2
+        Jamendo
     }
 }

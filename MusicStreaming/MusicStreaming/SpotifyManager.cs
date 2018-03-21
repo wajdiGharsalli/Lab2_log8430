@@ -1,4 +1,5 @@
-﻿using SpotifyAPI.Local;
+﻿using MusicStreaming;
+using SpotifyAPI.Local;
 using SpotifyAPI.Local.Enums;
 using SpotifyAPI.Local.Models;
 using SpotifyAPI.Web;
@@ -16,7 +17,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace MusicStreaming
+namespace ApiManagers
 {
     public class SpotifyManager : StreamingSystemManager
     {
@@ -33,7 +34,10 @@ namespace MusicStreaming
             m_spotifyLocalAPI.OnTrackTimeChange += OnTrackTimeChangeHandler;
             m_spotifyLocalAPI.OnVolumeChange += OnVolumeChangeHandler;
         }
-
+        /// <summary>
+        /// permet d obtenir l instance unique(Singleton)
+        /// </summary>
+        /// <returns>SpotifyManager</returns>
         public static SpotifyManager GetInstance()
         {
             if (m_instance == null)
@@ -41,6 +45,11 @@ namespace MusicStreaming
             return m_instance;
         }
 
+        /// <summary>
+        /// fait l authentification pour Spotify, retourne True si l operation reussi 
+        /// et false sinon
+        /// </summary>
+        /// <returns>Task<bool></returns>
         public override async Task<bool> RunAuthentication()
         {
             WebAPIFactory webApiFactory = new WebAPIFactory(
@@ -65,6 +74,12 @@ namespace MusicStreaming
             return true;
         }
 
+
+        /// <summary>
+        /// permet de se connecter a Spotify, retourne True si l operation reussi et
+        /// false sinon
+        /// </summary>
+        /// <returns>bool</returns>
         public override bool ConnectClient()
         {
             if (!SpotifyLocalAPI.IsSpotifyRunning() || !SpotifyLocalAPI.IsSpotifyWebHelperRunning())
@@ -88,6 +103,12 @@ namespace MusicStreaming
             return false;
         }
 
+        /// <summary>
+        /// Permet de chercher une piste par mot cle et retourne une liste
+        /// des pistes trouvees
+        /// </summary>
+        /// <param name="keyWord"></param>
+        /// <returns>Task<List<LocalTrack>></returns>
         public override async Task<List<LocalTrack>> SearchTrack(string keyWord)
         {
             SearchItem search = await m_spotifyWebAPI.SearchItemsAsync(keyWord, SearchType.Track);
@@ -107,6 +128,10 @@ namespace MusicStreaming
             return track;
         }
 
+        /// <summary>
+        /// permet d obtenir une reference vers la piste jouee actuellement
+        /// </summary>
+        /// <returns>LocalTrack</returns>
         public override LocalTrack GetCurrentTrack()
         {
             LocalTrack track = new LocalTrack();
@@ -124,15 +149,27 @@ namespace MusicStreaming
             return track;
         }
 
+        /// <summary>
+        /// permet de jouer une jouer une piste de Spotify
+        /// </summary>
+        /// <param name="track"></param>
+        /// <returns></returns>
         public override async Task Play(LocalTrack track)
         {
             await m_spotifyLocalAPI.PlayURL(track.Id);
         }
 
+
+        /// <summary>
+        /// permet de mettre en pause la lecture d une piste
+        /// </summary>
+        /// <returns></returns>
         public override async Task Pause()
         {
             await m_spotifyLocalAPI.Pause();
         }
+
+
 
         private void OnTrackChangeHandler(object sender, TrackChangeEventArgs e)
         {

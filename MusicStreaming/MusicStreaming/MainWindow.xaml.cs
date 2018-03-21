@@ -1,4 +1,6 @@
-﻿using SpotifyAPI.Local;
+﻿using ApiManagers;
+using MusicStreaming;
+using SpotifyAPI.Local;
 using SpotifyAPI.Web;
 using SpotifyAPI.Web.Auth;
 using SpotifyAPI.Web.Enums;
@@ -20,7 +22,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MusicStreaming
+namespace UserInterface
 {
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
@@ -38,11 +40,11 @@ namespace MusicStreaming
         public static readonly DependencyProperty CurrentTrackProperty = DependencyProperty.Register(
             "CurrentTrack", typeof(LocalTrack), typeof(MainWindow), new PropertyMetadata(null, OnCurrentTrackChange));
 
-        /*public static readonly DependencyProperty CurrentPlaylistProperty = DependencyProperty.Register(
-            "CurrentPlaylist", typeof(ObservableCollection<string>), typeof(MainWindow));*/
-
         public static readonly DependencyProperty CurrentPlaylistProperty = DependencyProperty.Register(
-        "CurrentPlaylist", typeof(LocalPlaylist), typeof(MainWindow));
+            "CurrentPlaylist", typeof(ObservableCollection<LocalTrack>), typeof(MainWindow));
+
+        /*public static readonly DependencyProperty CurrentPlaylistProperty = DependencyProperty.Register(
+        "CurrentPlaylist", typeof(LocalPlaylist), typeof(MainWindow));*/
 
         public ObservableCollection<LocalTrack> FoundTracks
         {
@@ -62,21 +64,22 @@ namespace MusicStreaming
             set { SetValue(CurrentTrackProperty, value); }
         }
 
-        /*public ObservableCollection<LocalTrack> CurrentPlaylist
+        public ObservableCollection<LocalTrack> CurrentPlaylist
         {
             get { return (ObservableCollection<LocalTrack>)GetValue(CurrentPlaylistProperty); }
             set { SetValue(CurrentPlaylistProperty, value); }
-        }*/
+        }
 
-        public LocalPlaylist CurrentPlaylist
+        /*public LocalPlaylist CurrentPlaylistTracks
         {
             get { return (LocalPlaylist)GetValue(CurrentPlaylistProperty); }
             set { SetValue(CurrentPlaylistProperty, value); }
-        }
+        }*/
 
         public bool PlayingPlaylist { get; set; }
+        public int CurrentPlaylistTrackIndex { get; set; }
 
-        StreamingSystemManager[] m_streamingSystemManagers = { SpotifyManager.GetInstance(), DeezerManager.GetInstance() };
+        StreamingSystemManager[] m_streamingSystemManagers = { SpotifyManager.GetInstance(), DeezerManager.GetInstance(), JamendoManager.GetInstance() };
 
         private StreamingSystemManager m_streamingSystemManager;
 
@@ -88,9 +91,10 @@ namespace MusicStreaming
             m_foundDataGrid.DataContext = this;
             m_trackSlider.DataContext = CurrentTrack;
             m_playlistControl.DataContext = this;
-            m_playlistDataGrid.DataContext = CurrentPlaylist;
+            m_playlistDataGrid.DataContext = this;
             EnableSearch();
             PlayingPlaylist = false;
+            CurrentPlaylistTrackIndex = 0;
 
             if (!Directory.Exists(PLAYLISTS_DIRECTORY))
                 Directory.CreateDirectory(PLAYLISTS_DIRECTORY);
@@ -182,13 +186,13 @@ namespace MusicStreaming
             FoundTracks.Clear();
             if (m_spotifySearchCheck.IsChecked == true)
                 FoundTracks = new ObservableCollection<LocalTrack>(await m_streamingSystemManagers[(int)StreamingSystemType.Spotify].SearchTrack(m_searchTextBox.Text));
-            if (m_x2SearchCheck.IsChecked == true)
+            if (m_deezerSearchCheck.IsChecked == true)
             {
                 (await m_streamingSystemManagers[(int)StreamingSystemType.Deezer].SearchTrack(m_searchTextBox.Text)).ForEach( t => FoundTracks.Add(t));
             }
-            if (m_x2SearchCheck.IsChecked == true)
+            if (m_jamendoSearchCheck.IsChecked == true)
             {
-
+                (await m_streamingSystemManagers[(int)StreamingSystemType.Jamendo].SearchTrack(m_searchTextBox.Text)).ForEach(t => FoundTracks.Add(t));
             }
         }
 
@@ -215,8 +219,12 @@ namespace MusicStreaming
         private void Window_Closed(object sender, EventArgs e)
         {         
             m_streamingSystemManager?.Pause();
-            if(m_streamingSystemManager != null)
+            if (m_streamingSystemManager != null)
+            {
                 m_streamingSystemManager.OnTrackTimeChange -= OnCurrentTrackTimeChange;
+                m_streamingSystemManager.OnTrackChange -= OnTrackChanged;
+                m_streamingSystemManager.OnPlayStateChange -= OnPlayStateChanged;
+            }
         }
 
         private static void OnCurrentTrackChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -246,21 +254,21 @@ namespace MusicStreaming
             string name = textBlock?.Text;
             if (name != null)
             {
-                CurrentPlaylist = new LocalPlaylist(System.IO.Path.Combine(PLAYLISTS_DIRECTORY, name + ".xml"));
+                CurrentPlaylist = (new LocalPlaylist(System.IO.Path.Combine(PLAYLISTS_DIRECTORY, name + ".xml"))).Tracks;
                 PlayNextTrackInCurrentPlaylist();
             }
         }
 
         private void PlayNextTrackInCurrentPlaylist()
         {
-            int index = CurrentPlaylist.CurrentIndex;
-            if (index < CurrentPlaylist.Tracks.Count)
+            int index = CurrentPlaylistTrackIndex;
+            if (index < CurrentPlaylist.Count)
             {
                 PlayingPlaylist = true;
-                CurrentTrack = CurrentPlaylist.Tracks[index];
+                CurrentTrack = CurrentPlaylist[index];
                 m_streamingSystemManager = m_streamingSystemManagers[(int)CurrentTrack.Type];
                 m_streamingSystemManager.Play(CurrentTrack);
-                CurrentPlaylist.CurrentIndex++;
+                CurrentPlaylistTrackIndex++;
             }
             else
             {

@@ -23,6 +23,11 @@ namespace MusicStreaming
             CurrentIndex = 0;
         }
 
+
+        /// <summary>
+        /// Constructeur prenant en entree un fichier xml contenant les pistes stockes
+        /// </summary>
+        /// <param name="file"></param>
         public LocalPlaylist(string file)
         {
             LocalPlaylist playList = Read(file);
@@ -31,6 +36,12 @@ namespace MusicStreaming
             CurrentIndex = 0;
         }
 
+
+        /// <summary>
+        /// permet de lire un  fichier xml contenant des pistes stockes
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>LocalPlaylist</returns>
         public static LocalPlaylist Read(string file)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(LocalPlaylist));
@@ -42,6 +53,11 @@ namespace MusicStreaming
             return playList;
         }
 
+
+        /// <summary>
+        /// permet d enregistrer une liste de pistes dans fichier xml
+        /// </summary>
+        /// <param name="file"></param>
         public void Save(string file)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(LocalPlaylist));
@@ -51,6 +67,12 @@ namespace MusicStreaming
             }
         }
 
+
+        /// <summary>
+        /// permet d ajouter une piste a une playlist(ajout a un fichier xml)
+        /// </summary>
+        /// <param name="track"></param>
+        /// <returns>bool</returns>
         public bool Add(LocalTrack track)
         {
             if (Tracks == null)

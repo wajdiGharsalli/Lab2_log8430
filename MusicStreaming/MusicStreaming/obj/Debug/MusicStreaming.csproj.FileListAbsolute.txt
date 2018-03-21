@@ -17,3 +17,11 @@ C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\obj\Deb
 C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\obj\Debug\MusicStreaming.csproj.CoreCompileInputs.cache
 C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\obj\Debug\MusicStreaming.exe
 C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\obj\Debug\MusicStreaming.pdb
+C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\bin\Debug\E.Deezer.dll
+C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\bin\Debug\JamendoApi.dll
+C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\bin\Debug\System.Net.Http.Extensions.dll
+C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\bin\Debug\System.Net.Http.Primitives.dll
+C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\bin\Debug\JamendoApi.xml
+C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\bin\Debug\System.Net.Http.Extensions.xml
+C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\bin\Debug\System.Net.Http.Primitives.xml
+C:\Users\Wajdi Gharsalli\Desktop\streaming\MusicStreaming\MusicStreaming\obj\Debug\MusicStreaming.csproj.App.config

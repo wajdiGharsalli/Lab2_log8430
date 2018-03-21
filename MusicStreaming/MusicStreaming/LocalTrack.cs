@@ -13,6 +13,9 @@ namespace MusicStreaming
 {
     public class LocalTrack
     {
+        /// <summary>
+        /// liste des properties (vocabulaire du langage C#)
+        /// </summary>
         public string Id { get; set; }
         public string Name { get; set; }
         public string Album { get; set; }
